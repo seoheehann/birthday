@@ -90,7 +90,7 @@ export default function Timeline({ onNext }) {
       <div className="container timeline-container">
         <header className="schedule-header">
           <div className="schedule-kicker">9월 17일 SCHEDULE</div>
-          <div className="schedule-subtitle">DONGSHIN'S BIRTHDAY</div>
+          <div className="schedule-subtitle">동신오빠 생일 축하해</div>
         </header>
 
         <div className="timeline-list">
