@@ -5,7 +5,7 @@ export default function Welcome({ onStart }){
   const [pin, setPin] = useState('')
   const [anim, setAnim] = useState('idle') // 'idle' | 'shake' | 'unlock'
 
-  const CORRECT_PIN = '0917'
+  const CORRECT_PIN = '0415'
 
   useEffect(() => {
     const target = new Date(2026, 8, 17, 0, 0, 0) // 2026-09-17 00:00 local
