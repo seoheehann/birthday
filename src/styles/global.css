@@ -79,6 +79,22 @@ body{
 }
 
 .welcome-screen::before{top:18px}
+
+/* stronger unlock animation: shackle moves and fades, lock rotates up */
+.welcome-lock.unlocked .lock-icon { animation: lockOpen 700ms cubic-bezier(.2,.9,.2,1) forwards; }
+.welcome-lock.unlocked .lock-icon::before { animation: shackleOpen 700ms cubic-bezier(.2,.9,.2,1) forwards; }
+
+@keyframes lockOpen {
+  0% { transform: none; }
+  40% { transform: rotate(-8deg) translateY(-2px); }
+  100% { transform: rotate(-30deg) translateY(-10px) scale(1.05); }
+}
+
+@keyframes shackleOpen {
+  0% { top: -12px; transform: translateX(-50%) rotate(0deg); opacity:1 }
+  60% { transform: translateX(-50%) rotate(-8deg); }
+  100% { top: -28px; transform: translateX(-50%) rotate(-25deg); opacity:0 }
+}
 .welcome-screen::after{bottom:18px}
 
 .welcome-portal{
@@ -178,11 +194,17 @@ body{
 }
 
 .welcome-dots span{
-  width:9px;
-  height:9px;
+  width:14px;
+  height:14px;
   border-radius:50%;
-  background:rgba(229,193,88,0.9);
-  box-shadow:0 0 16px rgba(229,193,88,0.28);
+  border:2px solid rgba(212,175,55,0.9);
+  background:transparent;
+  box-shadow:none;
+}
+
+.welcome-dots span.filled{
+  background:rgba(212,175,55,0.95);
+  box-shadow:0 0 12px rgba(212,175,55,0.22);
 }
 
 .welcome-hint-wrap{
@@ -219,6 +241,7 @@ body{
   text-align:center;
   letter-spacing:0.18em;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  margin-bottom: 25px;
 }
 
 .welcome-lock{
@@ -242,6 +265,9 @@ body{
   border-radius:4px;
   box-sizing:border-box;
 }
+
+/* Hidden off-screen input to trigger native mobile keyboard */
+.welcome-pin-input{position:absolute;left:-9999px;top:auto;width:1px;height:1px;border:0;padding:0;margin:0;overflow:hidden}
 
 .lock-icon::before{
   content:"";
