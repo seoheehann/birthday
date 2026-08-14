@@ -4,6 +4,7 @@ export default function Welcome({ onStart }){
   const [timeLeft, setTimeLeft] = useState({days: 0, totalHours: '00', mm: '00', ss: '00'})
   const [pin, setPin] = useState('')
   const [anim, setAnim] = useState('idle') // 'idle' | 'shake' | 'unlock'
+  const [fireworks, setFireworks] = useState(false)
 
   const CORRECT_PIN = '0415'
 
@@ -20,6 +21,11 @@ export default function Welcome({ onStart }){
       const mm = String(Math.floor((diff / (1000*60)) % 60)).padStart(2,'0')
       const ss = String(Math.floor((diff / 1000) % 60)).padStart(2,'0')
       setTimeLeft({ days, totalHours, mm, ss })
+
+      // trigger fireworks when target reached
+      if (target - now <= 0 && !fireworks) {
+        setFireworks(true)
+      }
     }
 
     update()
@@ -89,6 +95,13 @@ export default function Welcome({ onStart }){
             setPin(v)
           }}
         />
+        {fireworks && (
+          <div className="fireworks" aria-hidden="true">
+            {[...Array(12)].map((_, i) => (
+              <span key={i} style={{ transform: `rotate(${i * 30}deg)` }} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
