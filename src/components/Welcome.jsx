@@ -1,30 +1,52 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 export default function Welcome({ onStart }){
+  const TEST_MODE = false
+
   const [timeLeft, setTimeLeft] = useState({days: 0, totalHours: '00', mm: '00', ss: '00'})
   const [pin, setPin] = useState('')
   const [anim, setAnim] = useState('idle') // 'idle' | 'shake' | 'unlock'
-  const [fireworks, setFireworks] = useState(false)
+  const [fireworks, setFireworks] = useState(TEST_MODE)
+  const [letterOpened, setLetterOpened] = useState(false)
+  const fireworksStartRef = useRef(null)
 
   const CORRECT_PIN = '0415'
+  const target = TEST_MODE ? new Date(Date.now() + 2000) : new Date(2026, 8, 17, 0, 0, 0) // TEST: after 2s
+  const dayEnd = TEST_MODE ? new Date(Date.now() + 60000) : new Date(2026, 8, 18, 0, 0, 0) // TEST: 1 min window
+  const messageHideAt = TEST_MODE ? new Date(Date.now() + 15000) : new Date(2026, 8, 17, 1, 0, 0)
 
   useEffect(() => {
-    const target = new Date(2026, 8, 17, 0, 0, 0) // 2026-09-17 00:00 local
-
-    function update(){
-      const now = new Date()
-      let diff = target - now
-      const sign = diff < 0 ? -1 : 1
-      diff = Math.abs(diff)
-      const days = Math.floor(diff / (1000*60*60*24)) * sign
+    function setTimeLeftFromDiff(diff){
+      const days = Math.floor(diff / (1000*60*60*24))
       const totalHours = String(Math.floor(diff / (1000*60*60))).padStart(2,'0')
       const mm = String(Math.floor((diff / (1000*60)) % 60)).padStart(2,'0')
       const ss = String(Math.floor((diff / 1000) % 60)).padStart(2,'0')
       setTimeLeft({ days, totalHours, mm, ss })
+    }
 
-      // trigger fireworks when target reached
-      if (target - now <= 0 && !fireworks) {
-        setFireworks(true)
+    function update(){
+      const now = new Date()
+      const diff = Math.max(target - now, 0)
+
+      if (diff <= 0) {
+        setTimeLeft({ days: 0, totalHours: '00', mm: '00', ss: '00' })
+        if (!fireworksStartRef.current) {
+          fireworksStartRef.current = now
+          setFireworks(true)
+        }
+      } else {
+        setTimeLeftFromDiff(diff)
+        // ensure fireworks not active before target
+        if (!fireworksStartRef.current) setFireworks(false)
+      }
+
+      // stop fireworks after 60 seconds from start
+      if (fireworksStartRef.current) {
+        const elapsed = now - fireworksStartRef.current
+        if (elapsed >= 60_000) {
+          fireworksStartRef.current = null
+          setFireworks(false)
+        }
       }
     }
 
@@ -54,6 +76,11 @@ export default function Welcome({ onStart }){
     const el = document.getElementById('welcome-pin-input')
     if(el) el.focus()
   }
+
+  const now = new Date()
+  const fireworksActive = fireworks && now < dayEnd
+  const shouldShowLetterMessage = fireworksActive && now < messageHideAt
+  const letterMessage = letterOpened ? '비밀번호를 입력해주세요!' : '편지가 도착했어요!'
 
   return (
     <div className={`screen welcome-screen ${anim === 'shake' ? 'shake' : ''}`}>
@@ -95,11 +122,59 @@ export default function Welcome({ onStart }){
             setPin(v)
           }}
         />
-        {fireworks && (
+        {fireworksActive && (
+          <div className="letter-wrapper">
+            {shouldShowLetterMessage && (
+              <div className="letter-message">{letterMessage}</div>
+            )}
+            <button
+              type="button"
+              className={`letter-envelope ${letterOpened ? 'opened' : ''}`}
+              aria-label="Letter envelope"
+              onClick={() => setLetterOpened(true)}
+            >
+              <span className="letter-flap" />
+              <span className="letter-body" />
+              <span className="letter-seal" aria-hidden="true" />
+            </button>
+          </div>
+        )}
+
+        {fireworksActive && (
           <div className="fireworks" aria-hidden="true">
-            {[...Array(12)].map((_, i) => (
-              <span key={i} style={{ transform: `rotate(${i * 30}deg)` }} />
-            ))}
+            {[...Array(60)].map((_, i) => {
+              const angle = (i / 60) * Math.PI * 2
+              const distance = 42 + (i % 10) * 16
+              const x = Math.cos(angle) * distance
+              const y = Math.sin(angle) * distance
+              const scale = 1 + (i % 5) * 0.35
+              return (
+                <span
+                  key={i}
+                  style={{
+                    '--dx': `${x}px`,
+                    '--dy': `${y}px`,
+                    '--delay': `${i * 12}ms`,
+                    '--size': `${5 + (i % 4) * 6}px`,
+                    '--scale': scale
+                  }}
+                />
+              )
+            })}
+            {[...Array(24)].map((_, i) => {
+              const angle = (i / 24) * Math.PI * 2
+              const distance = 86 + (i % 6) * 18
+              const x = Math.cos(angle) * distance
+              const y = Math.sin(angle) * distance
+              return (
+                <span className="spark spark--star" key={`star-${i}`} style={{
+                  '--dx': `${x}px`,
+                  '--dy': `${y}px`,
+                  '--delay': `${i * 18}ms`,
+                  '--size': `${10 + (i % 4) * 6}px`
+                }} />
+              )
+            })}
           </div>
         )}
       </div>
