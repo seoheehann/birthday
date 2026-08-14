@@ -1,2 +1,2 @@
-# birthday
+# Birthday
 2026. 09. 17 생일기념 프로젝트
