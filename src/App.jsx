@@ -11,7 +11,7 @@ import BirthdayLetter from './components/BirthdayLetter'
 import BottomNav from './components/BottomNav'
 
 export default function App() {
-  const [step, setStep] = useState(1)
+  const [step, setStep] = useState(2)
 
   const goTo = (n) => setStep(n)
 

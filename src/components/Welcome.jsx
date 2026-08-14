@@ -2,13 +2,32 @@ import React from 'react'
 
 export default function Welcome({ onStart }){
   return (
-    <div className="screen">
-      <div className="container center" style={{flexDirection:'column',gap:12}}>
-        <div className="large">Happy Birthday,</div>
-        <div className="big-title">동신아.</div>
-        <div className="muted center">오늘 하루 정도는 너를 위해 만든 앱의 주인공이 되어주세요.</div>
-        <div style={{height:20}} />
-        <button className="btn" onClick={onStart}>시작하기</button>
+    <div className="screen welcome-screen">
+      <div className="welcome-portal">
+        <h1 className="welcome-title">조동신님의<br />생일 포털 입구</h1>
+        <div className="welcome-subtitle">SPECIALLY DESIGNED FOR DONGSIN</div>
+
+        <div className="welcome-pin-box">
+          <div className="welcome-dots" aria-label="PIN indicator">
+            <span />
+            <span />
+            <span />
+            <span />
+            <span />
+          </div>
+
+          <div className="welcome-hint-wrap">
+            <div className="welcome-hint">First date movie? (4 digits PIN)</div>
+          </div>
+
+          <div className="welcome-time">D-25 : 14 : 02 : 18</div>
+
+          <div className="welcome-lock" aria-label="Locked">
+            <span className="lock-icon" aria-hidden="true" />
+          </div>
+        </div>
+
+        <button className="btn welcome-btn" onClick={onStart}>UNLOCK</button>
       </div>
     </div>
   )
