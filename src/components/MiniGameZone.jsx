@@ -28,8 +28,8 @@ const games = [
 const shopItems = [
   { id: 'coffee', icon: '🔞', name: '19금 절대 권력권', description: '원하는 때, 원하는 곳에서 하고 싶은 대로 다 해드리는 19금 절대 권력', price: 1000 },
   { id: 'dessert', icon: '👩‍🍳', name: '무엇이든 요리해 드립니다! 서희표 1:1 수제 요리권', description: '원하는 메뉴를 서희가 직접 만들어주는 특별 요리권', price: 400 },
-  { id: 'wish', icon: '🪄', name: '소원 이용권', description: '귀여운 소원 하나 들어주기', price: 800 },
-  { id: 'date', icon: '💌', name: '데이트 선택권', description: '다음 데이트 코스를 직접 정하기', price: 1000 },
+  { id: 'wish', icon: '🪄', name: '소원 이용권', description: '귀여운 소원 하나 들어주기', price: 800, forSale: false },
+  { id: 'date', icon: '💌', name: '데이트 선택권', description: '다음 데이트 코스를 직접 정하기', price: 1000, forSale: false },
 ]
 
 function getTodayKey(date = new Date()) {
@@ -280,7 +280,7 @@ export default function MiniGameZone({ rouletteState, updateRouletteState }) {
             </div>
             {shopMessage && <div className='shop-message' role='status'>{shopMessage}</div>}
             <div className='shop-grid'>
-              {shopItems.map(item => {
+              {shopItems.filter(item => item.forSale !== false).map(item => {
                 return (
                   <article className='shop-item' key={item.id}>
                     <div className='shop-item-icon' aria-hidden='true'>{item.icon}</div>
