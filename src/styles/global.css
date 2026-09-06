@@ -942,6 +942,9 @@ body{
 .mini-zone{
   background:linear-gradient(180deg, rgba(18,18,18,1), rgba(16,16,16,1));
   padding:18px 0 40px;
+  overflow-y:auto;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(212,175,55,0.35) transparent;
 }
 .mini-zone-inner{
   max-width:420px;
@@ -961,6 +964,9 @@ body{
 }
 .mini-sub{ color:rgba(243,231,200,0.65); font-size:0.85rem; margin-top:4px }
 .mini-points{ color:rgba(243,231,200,0.9); font-weight:700 }
+.mini-header-actions{ display:flex; flex-direction:column; align-items:flex-end; gap:7px; }
+.coupon-pocket-btn{ padding:7px 9px; border:1px solid rgba(212,175,55,0.35); border-radius:999px; color:var(--gold-2); background:rgba(212,175,55,0.07); font-size:0.68rem; font-weight:800; cursor:pointer; white-space:nowrap; }
+.coupon-pocket-btn:hover{ border-color:rgba(212,175,55,0.7); background:rgba(212,175,55,0.13); }
 .mini-grid{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px }
 .mini-card{
   display:flex; flex-direction:column; align-items:flex-start; gap:6px;
@@ -972,6 +978,29 @@ body{
 .card-icon{ font-size:20px }
 .card-title{ font-weight:800; color:var(--gold-2); font-size:0.98rem }
 .card-sub{ color:rgba(243,231,200,0.68); font-size:0.8rem }
+
+.shop-entry{
+  grid-column:1 / -1; display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:14px;
+  width:100%; margin-top:8px; padding:17px 18px; overflow:hidden; position:relative;
+  border:1px solid rgba(212,175,55,0.58); border-radius:16px; cursor:pointer; text-align:left;
+  color:rgba(243,231,200,0.92); background:linear-gradient(115deg, rgba(212,175,55,0.18), rgba(212,175,55,0.035) 58%, rgba(255,255,255,0.04));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.025), 0 10px 28px rgba(0,0,0,0.2);
+  transition:transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+.shop-entry::after{ content:''; position:absolute; width:100px; height:100px; right:-36px; top:-52px; border:1px solid rgba(212,175,55,0.18); border-radius:50%; }
+.shop-entry:hover, .shop-entry:active{ transform:translateY(-3px); border-color:rgba(212,175,55,0.85); box-shadow:0 12px 30px rgba(212,175,55,0.09); }
+.shop-entry-icon{ display:grid; place-items:center; width:52px; height:52px; border-radius:14px; background:rgba(10,10,10,0.36); border:1px solid rgba(212,175,55,0.26); font-size:1.65rem; }
+.shop-entry-copy{ display:flex; flex-direction:column; min-width:0; }
+.shop-entry-label{ margin-bottom:2px; color:rgba(243,231,200,0.5); font-size:0.62rem; letter-spacing:0.18em; }
+.shop-entry-copy strong{ color:var(--gold-2); font-family:Georgia, 'Times New Roman', serif; font-size:1.08rem; }
+.shop-entry-copy small{ margin-top:4px; color:rgba(243,231,200,0.62); font-size:0.72rem; }
+.shop-entry-balance{ z-index:1; display:flex; flex-direction:column; align-items:flex-end; gap:5px; }
+.shop-entry-balance strong{ color:var(--gold-2); font-size:0.86rem; }
+.shop-entry-balance span{ color:rgba(243,231,200,0.58); font-size:0.65rem; letter-spacing:0.08em; }
+@media (max-width:390px){
+  .shop-entry{ grid-template-columns:auto 1fr; }
+  .shop-entry-balance{ grid-column:2; align-items:flex-start; flex-direction:row; }
+}
 
 .game-screen{ padding:10px 6px; border-radius:12px; background:rgba(255,255,255,0.01); border:1px solid rgba(212,175,55,0.12) }
 .game-back{ background:transparent; border:none; color:var(--gold-2); font-weight:700; cursor:pointer; margin-bottom:12px }
@@ -1009,6 +1038,32 @@ body{
 .mission-btn:disabled{
   opacity:1; cursor:default; background:rgba(212,175,55,0.16); border-color:rgba(212,175,55,0.3);
 }
+
+.shop-screen{ padding:14px; }
+.shop-header{ display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:16px; }
+.shop-eyebrow{ color:rgba(243,231,200,0.58); font-size:0.7rem; letter-spacing:0.14em; }
+.shop-header h3{ margin:4px 0; color:var(--gold-2); font-family:Georgia, 'Times New Roman', serif; }
+.shop-header p{ margin:0; color:rgba(243,231,200,0.62); font-size:0.78rem; line-height:1.5; }
+.shop-balance{ flex:0 0 auto; display:flex; flex-direction:column; align-items:flex-end; padding:9px 11px; border:1px solid rgba(212,175,55,0.35); border-radius:10px; background:rgba(212,175,55,0.06); }
+.shop-balance span{ color:rgba(243,231,200,0.58); font-size:0.68rem; }
+.shop-balance strong{ margin-top:2px; color:var(--gold-2); font-size:0.92rem; }
+.shop-message{ margin:-4px 0 12px; padding:9px 12px; border-radius:9px; background:rgba(212,175,55,0.1); color:var(--gold-2); font-size:0.82rem; text-align:center; }
+.shop-grid{ display:grid; gap:10px; }
+.shop-item{ display:grid; grid-template-columns:42px 1fr auto; align-items:center; gap:10px; padding:12px; border:1px solid rgba(212,175,55,0.2); border-radius:12px; background:rgba(255,255,255,0.025); }
+.shop-item.purchased{ opacity:0.62; }
+.shop-item-icon{ display:grid; place-items:center; width:42px; height:42px; border-radius:50%; background:rgba(212,175,55,0.1); font-size:1.35rem; }
+.shop-item-info h4{ margin:0 0 4px; color:var(--gold-2); font-size:0.9rem; }
+.shop-item-info p{ margin:0; color:rgba(243,231,200,0.58); font-size:0.72rem; line-height:1.4; }
+.shop-buy-btn{ min-width:76px; padding:9px 10px; border:1px solid rgba(212,175,55,0.55); border-radius:999px; background:rgba(212,175,55,0.08); color:var(--gold-2); font-size:0.75rem; font-weight:800; cursor:pointer; }
+.shop-buy-btn:hover:not(:disabled){ background:rgba(212,175,55,0.17); }
+.shop-buy-btn[data-affordable='false']{ border-color:rgba(243,231,200,0.18); color:rgba(243,231,200,0.48); }
+.shop-buy-btn:disabled{ cursor:default; border-color:rgba(212,175,55,0.2); color:rgba(243,231,200,0.6); }
+@media (max-width:390px){
+  .shop-header{ flex-direction:column; }
+  .shop-balance{ align-items:flex-start; }
+  .shop-item{ grid-template-columns:38px 1fr; }
+  .shop-buy-btn{ grid-column:1 / -1; width:100%; }
+}
 .confetti-burst{ position:absolute; inset:0; pointer-events:none; }
 .confetti-burst span{
   position:absolute; left:50%; top:42%; width:8px; height:16px; background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(212,175,55,0.95));
@@ -1022,3 +1077,112 @@ body{
   100% { opacity:0; transform:translate(calc(-50% + var(--x)), calc(-50% + var(--y))) rotate(var(--rot)) scale(1.1); }
 }
 
+.ticket-popup-backdrop{ position:absolute; inset:0; z-index:100; display:grid; place-items:center; padding:24px; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); }
+.ticket-popup{ position:relative; width:min(290px, 100%); padding:28px 24px 24px; text-align:center; border:1px solid rgba(212,175,55,0.72); border-radius:18px; color:rgba(243,231,200,0.92); background:linear-gradient(145deg, #1b1913, #0e0e0e); box-shadow:0 22px 60px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.03); animation:ticketPopupIn 300ms ease-out; }
+.ticket-popup-close{ position:absolute; top:8px; right:10px; width:34px; height:34px; border:0; background:transparent; color:rgba(243,231,200,0.68); font-size:1.55rem; cursor:pointer; }
+.ticket-popup-icon{ font-size:3rem; filter:drop-shadow(0 5px 12px rgba(212,175,55,0.28)); }
+.ticket-popup h2{ margin:12px 0 18px; color:var(--gold-2); font-family:Georgia, 'Times New Roman', serif; font-size:1.38rem; line-height:1.4; }
+.ticket-popup-reward{ padding:11px; border:1px solid rgba(212,175,55,0.35); border-radius:999px; background:rgba(212,175,55,0.09); font-size:0.88rem; }
+.ticket-popup-reward strong{ color:var(--gold-2); font-size:1.05rem; }
+@keyframes ticketPopupIn{ from{ opacity:0; transform:translateY(12px) scale(0.96); } to{ opacity:1; transform:none; } }
+
+.roulette-screen{ padding:14px; overflow:hidden; }
+.roulette-header{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
+.roulette-header span{ color:rgba(243,231,200,0.5); font-size:0.66rem; letter-spacing:0.14em; }
+.roulette-header h3{ margin:3px 0 0; color:var(--gold-2); font-family:Georgia, 'Times New Roman', serif; }
+.ticket-counter{ flex:0 0 auto; display:flex; flex-direction:column; align-items:center; min-width:76px; padding:8px 12px; border:1px solid rgba(212,175,55,0.42); border-radius:12px; background:rgba(212,175,55,0.07); }
+.ticket-counter strong{ color:var(--gold-2); font-size:1.4rem; line-height:1.1; }
+.roulette-wheel-wrap{ position:relative; width:min(290px, 82vw); aspect-ratio:1; margin:8px auto 18px; padding:9px; border:1px solid rgba(212,175,55,0.52); border-radius:50%; background:#12110e; box-shadow:0 12px 32px rgba(0,0,0,0.4), inset 0 0 22px rgba(212,175,55,0.08); }
+.roulette-pointer{ position:absolute; z-index:4; left:50%; top:-2px; width:0; height:0; transform:translateX(-50%); border-left:11px solid transparent; border-right:11px solid transparent; border-top:25px solid var(--gold-2); filter:drop-shadow(0 3px 3px rgba(0,0,0,0.5)); }
+.roulette-wheel{ position:relative; width:100%; height:100%; border-radius:50%; overflow:hidden; transition:transform 3.2s cubic-bezier(0.12, 0.62, 0.08, 1); box-shadow:inset 0 0 0 3px rgba(243,231,200,0.18); }
+.roulette-wheel svg{ display:block; width:100%; height:100%; }
+.roulette-sector path{ stroke:rgba(17,14,8,0.7); stroke-width:1.5; }
+.roulette-sector text{ fill:#fff7dc; font-size:10px; font-weight:900; paint-order:stroke; stroke:rgba(0,0,0,0.58); stroke-width:2px; stroke-linejoin:round; }
+.roulette-sector.rare path{ stroke:#ffe28a; stroke-width:3; filter:drop-shadow(0 0 5px rgba(255,211,92,0.9)); }
+.roulette-sector.rare text{ font-size:14px; filter:drop-shadow(0 0 4px rgba(255,225,134,0.85)); }
+.roulette-wheel-label{ position:absolute; inset:0; display:flex; justify-content:center; padding-top:22px; transform-origin:center; color:#fff6d8; font-size:0.64rem; font-weight:800; text-align:center; text-shadow:0 1px 3px rgba(0,0,0,0.8); }
+.roulette-wheel-label > span{ display:block; width:70px; height:max-content; }
+.roulette-wheel-center{ position:absolute; z-index:3; left:50%; top:50%; display:grid; place-items:center; width:62px; height:62px; transform:translate(-50%,-50%); border:3px solid rgba(243,231,200,0.7); border-radius:50%; color:var(--gold-2); background:#14120d; font-family:Georgia, 'Times New Roman', serif; font-size:0.72rem; letter-spacing:0.08em; box-shadow:0 4px 14px rgba(0,0,0,0.45); }
+.roulette-legend{ display:grid; grid-template-columns:1fr 1fr; gap:6px; margin:-6px 0 14px; }
+.roulette-legend span{ display:flex; align-items:center; gap:3px; min-width:0; color:rgba(243,231,200,0.62); font-size:0.62rem; }
+.roulette-legend span strong{ margin-left:auto; color:rgba(243,231,200,0.48); }
+.roulette-legend span.rare{ color:var(--gold-2); text-shadow:0 0 8px rgba(212,175,55,0.25); }
+.roulette-spin-btn, .quiz-submit{ width:100%; min-height:48px; border:1px solid rgba(212,175,55,0.8); border-radius:999px; color:#171208; background:linear-gradient(135deg, #e2c368, #b38427); font-weight:900; cursor:pointer; }
+.roulette-spin-btn:disabled, .quiz-submit:disabled{ opacity:0.48; cursor:default; }
+.roulette-spin-btn:disabled{
+  opacity:1; cursor:not-allowed; color:rgba(243,231,200,0.38);
+  border-color:rgba(243,231,200,0.14); background:rgba(255,255,255,0.035);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,0.18);
+}
+.roulette-result{ margin:10px 0 0; color:rgba(243,231,200,0.72); font-size:0.8rem; line-height:1.45; text-align:center; }
+.roulette-result.won{ padding:10px; border-radius:10px; color:var(--gold-2); background:rgba(212,175,55,0.09); font-weight:800; }
+.bonus-chance{ margin-top:22px; padding:16px 14px; border:1px solid rgba(212,175,55,0.28); border-radius:15px; background:rgba(255,255,255,0.018); }
+.bonus-toggle{ display:block; width:100%; padding:0; border:0; color:inherit; background:transparent; cursor:pointer; text-align:left; }
+.bonus-title-row{ display:flex; justify-content:space-between; gap:10px; align-items:center; width:100%; }
+.bonus-title-row > span:first-child{ display:flex; flex-direction:column; }
+.bonus-kicker{ color:rgba(243,231,200,0.48); font-size:0.64rem; letter-spacing:0.16em; }
+.bonus-title-row strong{ margin-top:4px; color:var(--gold-2); font-size:1rem; }
+.bonus-toggle-side{ display:flex; align-items:center; gap:8px; }
+.bonus-chevron{ display:grid; place-items:center; width:26px; height:26px; border:1px solid rgba(212,175,55,0.3); border-radius:50%; color:var(--gold-2); font-size:1rem; }
+.bonus-day{ padding:5px 8px; border:1px solid rgba(212,175,55,0.25); border-radius:999px; color:rgba(243,231,200,0.7); font-size:0.64rem; }
+.bonus-description{ margin:12px 0; color:rgba(243,231,200,0.63); font-size:0.76rem; }
+.quiz-question{ margin:12px 0; color:rgba(243,231,200,0.95); font-size:0.9rem; font-weight:700; line-height:1.5; }
+.quiz-options{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.quiz-options button{ display:flex; align-items:center; gap:7px; min-height:42px; padding:8px; border:1px solid rgba(212,175,55,0.18); border-radius:9px; color:rgba(243,231,200,0.75); background:rgba(255,255,255,0.025); font-size:0.75rem; text-align:left; cursor:pointer; }
+.quiz-options button span{ display:grid; place-items:center; flex:0 0 22px; height:22px; border-radius:50%; color:var(--gold-2); background:rgba(212,175,55,0.1); font-size:0.65rem; }
+.quiz-options button.selected{ border-color:rgba(212,175,55,0.75); color:var(--gold-2); background:rgba(212,175,55,0.1); }
+.quiz-text-input{ width:100%; min-height:50px; padding:0 14px; border:1px solid rgba(212,175,55,0.38); border-radius:10px; outline:none; color:var(--gold-2); background:rgba(0,0,0,0.22); font:inherit; text-align:center; }
+.quiz-text-input:focus{ border-color:rgba(212,175,55,0.78); box-shadow:0 0 0 3px rgba(212,175,55,0.08); }
+.quiz-text-input::placeholder{ color:rgba(243,231,200,0.26); }
+.quiz-submit{ min-height:44px; margin-top:12px; }
+.quiz-message, .quiz-completed, .quiz-unavailable{ margin-top:12px; padding:11px; border-radius:9px; font-size:0.78rem; line-height:1.5; text-align:center; }
+.quiz-message.correct, .quiz-completed{ color:var(--gold-2); background:rgba(212,175,55,0.1); }
+.quiz-message.wrong{ color:#e7b1a8; background:rgba(169,72,58,0.12); }
+.quiz-unavailable{ color:rgba(243,231,200,0.6); background:rgba(255,255,255,0.025); }
+.roulette-prize-backdrop{ position:absolute; inset:0; z-index:8; display:grid; place-items:center; padding:20px; background:rgba(0,0,0,0.76); backdrop-filter:blur(4px); }
+.roulette-prize-modal{ width:100%; padding:25px 18px 18px; border:1px solid rgba(212,175,55,0.7); border-radius:17px; color:rgba(243,231,200,0.7); background:linear-gradient(145deg, #1d1814, #0f0f0e); text-align:center; box-shadow:0 20px 55px rgba(0,0,0,0.55); animation:ticketPopupIn 260ms ease-out; }
+.roulette-prize-icon{ font-size:3rem; filter:drop-shadow(0 5px 12px rgba(192,75,98,0.35)); }
+.roulette-prize-modal > span{ display:block; margin-top:8px; color:rgba(243,231,200,0.4); font-size:0.62rem; letter-spacing:0.16em; }
+.roulette-prize-modal h4{ margin:6px 0 8px; color:var(--gold-2); font-size:1.25rem; }.roulette-prize-modal p{ margin:0; font-size:0.8rem; }
+.roulette-prize-modal button{ width:100%; min-height:44px; margin-top:17px; border:1px solid rgba(212,175,55,0.75); border-radius:999px; color:#171208; background:linear-gradient(135deg, #e2c368, #b38427); font-weight:900; cursor:pointer; }
+.quiz-manual-backdrop{ position:absolute; inset:0; z-index:9; display:grid; place-items:center; padding:20px; background:rgba(0,0,0,0.78); backdrop-filter:blur(4px); }
+.quiz-manual-modal{ width:100%; padding:22px 17px 17px; border:1px solid rgba(212,175,55,0.62); border-radius:16px; color:rgba(243,231,200,0.7); background:#15140f; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.55); animation:ticketPopupIn 240ms ease-out; }
+.quiz-manual-modal > span{ color:rgba(243,231,200,0.42); font-size:0.62rem; letter-spacing:0.13em; }
+.quiz-manual-modal h4{ margin:10px 0 8px; color:var(--gold-2); font-size:1.1rem; }.quiz-manual-modal p{ margin:0; font-size:0.78rem; }
+.quiz-manual-modal > div{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:17px; }
+.quiz-manual-modal button{ min-height:42px; border:1px solid rgba(243,231,200,0.15); border-radius:999px; color:#e0aaa0; background:rgba(169,72,58,0.1); font-weight:800; cursor:pointer; }
+.quiz-manual-modal button.correct{ border-color:rgba(212,175,55,0.65); color:#171208; background:linear-gradient(135deg, #e2c368, #b38427); }
+
+.coupon-modal-backdrop{ position:absolute; inset:0; z-index:110; display:grid; place-items:center; padding:20px; background:rgba(0,0,0,0.76); backdrop-filter:blur(5px); }
+.coupon-modal{ position:relative; display:flex; flex-direction:column; width:100%; max-height:88%; padding:18px; overflow:hidden; border:1px solid rgba(212,175,55,0.62); border-radius:18px; background:linear-gradient(160deg, #191813, #0d0d0d 68%); box-shadow:0 24px 60px rgba(0,0,0,0.58), inset 0 0 0 1px rgba(255,255,255,0.025); animation:ticketPopupIn 250ms ease-out; }
+.coupon-modal-header{ display:flex; align-items:flex-start; justify-content:space-between; }
+.coupon-modal-header span{ color:rgba(243,231,200,0.45); font-size:0.64rem; letter-spacing:0.17em; }
+.coupon-modal-header h3{ margin:3px 0 0; color:var(--gold-2); font-family:Georgia, 'Times New Roman', serif; }
+.coupon-modal-close{ width:34px; height:34px; border:0; color:rgba(243,231,200,0.7); background:transparent; font-size:1.6rem; cursor:pointer; }
+.coupon-tabs{ display:grid; grid-template-columns:1fr 1fr; gap:5px; margin:16px 0 13px; padding:4px; border-radius:11px; background:rgba(255,255,255,0.035); }
+.coupon-tabs button{ padding:9px 5px; border:0; border-radius:8px; color:rgba(243,231,200,0.5); background:transparent; font-size:0.73rem; font-weight:700; cursor:pointer; }
+.coupon-tabs button strong{ display:inline-grid; place-items:center; min-width:19px; height:19px; margin-left:3px; border-radius:50%; background:rgba(255,255,255,0.06); font-size:0.65rem; }
+.coupon-tabs button.active{ color:var(--gold-2); background:rgba(212,175,55,0.12); box-shadow:inset 0 0 0 1px rgba(212,175,55,0.25); }
+.coupon-list{ display:grid; gap:11px; min-height:150px; overflow-y:auto; padding:2px; }
+.coupon-ticket{ position:relative; display:grid; grid-template-columns:42px 1fr auto; align-items:center; gap:10px; min-height:104px; padding:13px 12px; overflow:hidden; border:1px solid rgba(212,175,55,0.48); border-radius:13px; background:linear-gradient(110deg, rgba(212,175,55,0.1), rgba(255,255,255,0.018)); }
+.coupon-ticket::before, .coupon-ticket::after{ content:''; position:absolute; right:77px; width:16px; height:16px; border:1px solid rgba(212,175,55,0.48); border-radius:50%; background:#0e0e0e; }
+.coupon-ticket::before{ top:-9px; }.coupon-ticket::after{ bottom:-9px; }
+.coupon-ticket-icon{ display:grid; place-items:center; width:42px; height:42px; border:1px solid rgba(212,175,55,0.24); border-radius:10px; background:rgba(0,0,0,0.24); font-size:1.35rem; }
+.coupon-ticket-copy{ min-width:0; padding-right:6px; }
+.coupon-ticket-copy h4{ margin:0 0 4px; color:var(--gold-2); font-size:0.87rem; }
+.coupon-ticket-copy p{ margin:0; color:rgba(243,231,200,0.56); font-size:0.69rem; line-height:1.4; }
+.coupon-ticket-copy small{ display:block; margin-top:7px; color:rgba(243,231,200,0.3); font-size:0.55rem; letter-spacing:0.1em; }
+.coupon-use-btn{ align-self:stretch; min-width:67px; margin:-13px -12px -13px 0; border:0; border-left:1px dashed rgba(212,175,55,0.4); color:#181207; background:linear-gradient(160deg, #e2c368, #ab7c24); font-size:0.72rem; font-weight:900; cursor:pointer; }
+.coupon-ticket.used{ filter:saturate(0.2); border-color:rgba(243,231,200,0.14); background:rgba(255,255,255,0.018); }
+.coupon-ticket.used::after{ content:''; position:absolute; inset:0; width:auto; height:auto; border:0; border-radius:0; background:rgba(0,0,0,0.38); }
+.coupon-used-stamp{ z-index:2; display:flex; flex-direction:column; align-items:center; padding:5px 7px; transform:rotate(-9deg); border:2px solid rgba(190,130,96,0.8); border-radius:5px; color:rgba(211,151,117,0.9); }
+.coupon-used-stamp strong{ font-size:0.76rem; letter-spacing:0.08em; }.coupon-used-stamp span{ font-size:0.54rem; }
+.coupon-empty{ display:grid; place-items:center; align-content:center; min-height:180px; color:rgba(243,231,200,0.45); text-align:center; }
+.coupon-empty span{ font-size:2rem; opacity:0.65; }.coupon-empty p{ margin:10px 0 0; font-size:0.78rem; }
+.coupon-confirm-backdrop{ position:absolute; inset:0; z-index:3; display:grid; place-items:center; padding:20px; background:rgba(0,0,0,0.74); backdrop-filter:blur(3px); }
+.coupon-confirm{ width:100%; padding:20px 17px 16px; border:1px solid rgba(212,175,55,0.55); border-radius:15px; color:rgba(243,231,200,0.82); background:#15140f; text-align:center; box-shadow:0 18px 45px rgba(0,0,0,0.5); }
+.coupon-confirm-icon{ font-size:2rem; }.coupon-confirm h4{ margin:7px 0 10px; color:var(--gold-2); }.coupon-confirm p{ margin:0; font-size:0.78rem; line-height:1.6; }.coupon-confirm p strong{ color:#dfa790; }
+.coupon-confirm-actions{ display:grid; grid-template-columns:1fr 1.35fr; gap:8px; margin-top:16px; }
+.coupon-confirm-actions button{ min-height:42px; border:1px solid rgba(243,231,200,0.15); border-radius:999px; color:rgba(243,231,200,0.65); background:rgba(255,255,255,0.035); font-size:0.72rem; font-weight:800; cursor:pointer; }
+.coupon-confirm-actions button.confirm{ border-color:rgba(212,175,55,0.65); color:#191308; background:linear-gradient(135deg, #e2c368, #b38427); }
+@media (max-width:390px){ .mini-header{ align-items:flex-start; }.mini-title{ font-size:1.18rem; }.mini-sub{ max-width:190px; }.coupon-ticket{ grid-template-columns:36px 1fr auto; }.coupon-ticket-icon{ width:36px; height:36px; } }
