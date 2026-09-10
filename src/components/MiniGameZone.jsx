@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import RouletteGame from './RouletteGame'
 import CouponPocketModal from './CouponPocketModal'
+import MockExam from './MockExam'
+import { savePlayerState } from '../utils/cloudSync'
 
 const missions = [
   '서희가 입을 옷 골라주기',
@@ -22,7 +24,7 @@ const MISSION_START_DATE = new Date(2026, 8, 6)
 const games = [
   { id: 'daily', icon: '📅', title: '매일 미션 수행하기', sub: '하루에 하나씩!' },
   { id: 'roulette', icon: '🎰', title: '행운의 룰렛', sub: '오늘의 운세 & 럭키 보상' },
-  { id: 'balance', icon: '⚖️', title: '밸런스 게임', sub: '내 마음을 공부하는 선택' },
+  { id: 'mock-exam', icon: '📝', title: '동신 모의고사', sub: '오늘의 질문에 답하기' },
 ]
 
 const shopItems = [
@@ -63,7 +65,7 @@ function getTimeUntilMidnight(now = new Date()) {
   return { hours, minutes, seconds }
 }
 
-export default function MiniGameZone({ rouletteState, updateRouletteState }) {
+export default function MiniGameZone({ rouletteState, updateRouletteState, cloudPlayerState, cloudSyncReady }) {
   const [view, setView] = useState('list') // 'list' or game id
   const [points, setPoints] = useState(0)
   const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 })
@@ -79,6 +81,17 @@ export default function MiniGameZone({ rouletteState, updateRouletteState }) {
 
   useEffect(() => {
     try {
+      if (cloudPlayerState) {
+        setPoints(Number.parseInt(cloudPlayerState.points, 10) || 0)
+        const remoteItems = Array.isArray(cloudPlayerState.purchased_coupons) ? cloudPlayerState.purchased_coupons : []
+        const remoteUsedCoupons = Array.isArray(cloudPlayerState.used_coupon_ids) ? cloudPlayerState.used_coupon_ids : []
+        setPurchasedItems(remoteItems)
+        setUsedCouponIds(remoteUsedCoupons)
+        localStorage.setItem('miniPoints', String(Number.parseInt(cloudPlayerState.points, 10) || 0))
+        localStorage.setItem('miniShopPurchases', JSON.stringify(remoteItems))
+        localStorage.setItem('miniShopUsedCoupons', JSON.stringify(remoteUsedCoupons))
+        return
+      }
       const v = parseInt(localStorage.getItem('miniPoints') || '0', 10)
       if (!isNaN(v)) setPoints(v)
       const parsedItems = JSON.parse(localStorage.getItem('miniShopPurchases') || '[]')
@@ -94,7 +107,7 @@ export default function MiniGameZone({ rouletteState, updateRouletteState }) {
         try { localStorage.setItem('miniShopUsedCoupons', JSON.stringify(migratedUsedCoupons)) } catch (e) {}
       }
     } catch (e) {}
-  }, [])
+  }, [cloudPlayerState])
 
   useEffect(() => {
     try {
@@ -136,6 +149,7 @@ export default function MiniGameZone({ rouletteState, updateRouletteState }) {
       localStorage.setItem(`dailyMissionDone:${todayKey}`, 'true')
       localStorage.setItem('miniPoints', String(nextPoints))
     } catch (e) {}
+    syncCloudState(nextPoints, purchasedItems, usedCouponIds)
 
     window.setTimeout(() => setConfettiBurst(false), 1500)
   }
@@ -154,6 +168,7 @@ export default function MiniGameZone({ rouletteState, updateRouletteState }) {
       localStorage.setItem('miniPoints', String(nextPoints))
       localStorage.setItem('miniShopPurchases', JSON.stringify(nextItems))
     } catch (e) {}
+    syncCloudState(nextPoints, nextItems, usedCouponIds)
   }
 
   function handleUseCoupon(couponId) {
@@ -161,12 +176,24 @@ export default function MiniGameZone({ rouletteState, updateRouletteState }) {
     const nextUsedCouponIds = [...usedCouponIds, couponId]
     setUsedCouponIds(nextUsedCouponIds)
     try { localStorage.setItem('miniShopUsedCoupons', JSON.stringify(nextUsedCouponIds)) } catch (e) {}
+    syncCloudState(points, purchasedItems, nextUsedCouponIds)
+  }
+
+  function syncCloudState(nextPoints, nextItems, nextUsedCouponIds) {
+    if (!cloudSyncReady) return
+    savePlayerState({
+      points: nextPoints,
+      purchasedCoupons: nextItems,
+      usedCouponIds: nextUsedCouponIds,
+      rouletteState,
+    }).catch(error => console.error('Supabase state sync failed. Local storage remains active.', error))
   }
 
   function handleRoulettePointReward(amount) {
     setPoints(currentPoints => {
       const nextPoints = currentPoints + amount
       try { localStorage.setItem('miniPoints', String(nextPoints)) } catch (e) {}
+      syncCloudState(nextPoints, purchasedItems, usedCouponIds)
       return nextPoints
     })
   }
@@ -176,6 +203,7 @@ export default function MiniGameZone({ rouletteState, updateRouletteState }) {
     setPurchasedItems(currentItems => {
       const nextItems = [...currentItems, itemId]
       try { localStorage.setItem('miniShopPurchases', JSON.stringify(nextItems)) } catch (e) {}
+      syncCloudState(points, nextItems, usedCouponIds)
       return nextItems
     })
   }
@@ -305,7 +333,11 @@ export default function MiniGameZone({ rouletteState, updateRouletteState }) {
           />
         )}
 
-        {view !== 'list' && view !== 'daily' && view !== 'shop' && view !== 'roulette' && (
+        {view === 'mock-exam' && (
+          <MockExam points={points} onRewardPoints={handleRoulettePointReward} onBack={backToList} />
+        )}
+
+        {view !== 'list' && view !== 'daily' && view !== 'shop' && view !== 'roulette' && view !== 'mock-exam' && (
           <div className={`game-screen game-${view}`}>
             <button className="game-back" onClick={backToList}>⬅️ BACK (게임 목록으로)</button>
             <div className="game-skeleton">

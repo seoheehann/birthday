@@ -525,6 +525,26 @@ body{
   padding:8px 0 12px;
 }
 
+.timeline-date-heading{
+  margin:4px 0 -4px;
+  color:var(--gold-2);
+  font-family:Georgia, "Times New Roman", serif;
+  font-size:0.82rem;
+  letter-spacing:0.1em;
+}
+
+.timeline-completed{
+  display:inline-flex;
+  margin-top:8px;
+  padding:5px 8px;
+  border:1px solid rgba(212,175,55,0.28);
+  border-radius:999px;
+  color:rgba(212,175,55,0.92);
+  background:rgba(212,175,55,0.1);
+  font-size:0.68rem;
+  font-weight:700;
+}
+
 .timeline-item{
   display:flex;
   gap:14px;
@@ -1007,6 +1027,35 @@ body{
 .game-skeleton{ padding:20px; text-align:center }
 .game-skeleton h3{ color:var(--gold-2); margin-bottom:6px }
 .game-skeleton .muted{ color:rgba(243,231,200,0.6) }
+.mock-exam-screen{ padding:14px; }
+.mock-exam-header{ margin:2px 0 18px; }
+.mock-exam-eyebrow, .admin-eyebrow{ color:rgba(243,231,200,0.48); font-size:0.64rem; letter-spacing:0.16em; }
+.mock-exam-header h3{ margin:4px 0; color:var(--gold-2); font-family:Georgia, 'Times New Roman', serif; }
+.mock-exam-header p{ margin:0; color:rgba(243,231,200,0.62); font-size:0.78rem; }
+.mock-exam-question{ padding:16px 14px; border:1px solid rgba(212,175,55,0.58); border-radius:14px; background:rgba(212,175,55,0.06); }
+.mock-exam-question span{ display:block; color:rgba(243,231,200,0.48); font-size:0.62rem; letter-spacing:0.08em; }
+.mock-exam-question strong{ display:block; margin-top:10px; color:var(--gold-2); font-size:1.05rem; line-height:1.6; }
+.mock-exam-answer{ display:block; width:100%; min-height:170px; margin-top:12px; padding:13px; resize:vertical; border:1px solid rgba(212,175,55,0.36); border-radius:11px; outline:none; color:rgba(243,231,200,0.92); background:rgba(0,0,0,0.22); font:inherit; line-height:1.6; box-sizing:border-box; }
+.mock-exam-answer:focus{ border-color:rgba(212,175,55,0.78); box-shadow:0 0 0 3px rgba(212,175,55,0.08); }
+.mock-exam-answer:disabled{ opacity:0.72; }
+.mock-exam-submit{ width:100%; min-height:48px; margin-top:12px; border:1px solid rgba(212,175,55,0.8); border-radius:999px; color:#171208; background:linear-gradient(135deg, #e2c368, #b38427); font-weight:900; cursor:pointer; }
+.mock-exam-submit:disabled{ opacity:0.48; cursor:default; }
+.mock-exam-message, .mock-exam-completed{ margin-top:12px; padding:11px; border-radius:9px; color:var(--gold-2); background:rgba(212,175,55,0.1); font-size:0.78rem; line-height:1.5; text-align:center; }
+.admin-screen{ min-height:100vh; padding:32px max(20px, 5vw); color:rgba(243,231,200,0.9); background:linear-gradient(145deg, #17150f, #0d0d0d 70%); box-sizing:border-box; }
+.admin-header{ display:flex; justify-content:space-between; gap:24px; max-width:860px; margin:0 auto 24px; }
+.admin-header h1{ margin:6px 0; color:var(--gold-2); font-family:Georgia, 'Times New Roman', serif; }
+.admin-header p{ margin:0; color:rgba(243,231,200,0.58); font-size:0.86rem; }
+.admin-actions{ display:flex; align-items:flex-start; gap:8px; }
+.admin-actions button{ min-height:40px; padding:0 13px; border:1px solid rgba(212,175,55,0.45); border-radius:999px; color:var(--gold-2); background:rgba(212,175,55,0.08); cursor:pointer; }
+.admin-actions button:disabled{ opacity:0.42; cursor:default; }
+.admin-answer-list{ display:grid; gap:12px; max-width:860px; margin:0 auto; }
+.admin-answer, .admin-empty{ padding:17px; border:1px solid rgba(212,175,55,0.28); border-radius:12px; background:rgba(255,255,255,0.03); }
+.admin-answer-meta{ display:flex; justify-content:space-between; gap:12px; color:rgba(243,231,200,0.5); font-size:0.72rem; }
+.admin-answer-meta strong{ color:var(--gold-2); }
+.admin-answer-question{ margin-top:13px; color:rgba(243,231,200,0.7); font-size:0.8rem; }
+.admin-answer p{ margin:8px 0 0; color:rgba(243,231,200,0.94); line-height:1.65; white-space:pre-wrap; }
+.admin-empty{ color:rgba(243,231,200,0.55); text-align:center; }
+@media (max-width:600px){ .admin-header{ flex-direction:column; }.admin-actions{ align-items:stretch; }.admin-actions button{ flex:1; } }
 
 .mission-screen{ position:relative; overflow:hidden; }
 .mission-header-row h3{

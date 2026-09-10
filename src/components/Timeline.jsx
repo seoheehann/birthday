@@ -2,16 +2,8 @@ import React, { useMemo, useState, useEffect, useRef } from 'react'
 import LadderGame from './LadderGame'
 
 const schedule = [
-  { time: '14:30', title: '간단 식사', subtitle: '🔒 9월 16일 공개 예정', locked: true },
-  {
-    time: '16:30',
-    title: '약속 일정',
-    subtitle: '백화점에서 선물 고르기',
-    button: '🎁 이벤트 고르기',
-    event: true,
-  },
-  { time: '17:30', title: '다음 일정', subtitle: '🔒 9월 16일 공개 예정', locked: true },
-  { time: '19:30', title: '저녁 식사', subtitle: '🔒 9월 16일 공개 예정', locked: true },
+  { date: '9월 17일 SCHEDULE', time: '19:00', title: '저녁 식사', subtitle: '🔒 9월 16일 공개 예정' },
+  { date: '9월 19일 SCHEDULE', time: '16:00', title: '약속 일정', subtitle: '백화점에서 선물 고르기', completed: true },
 ]
 
 const ladderChoices = ['1', '2', '3']
@@ -89,38 +81,32 @@ export default function Timeline({ onNext }) {
     <div className="screen schedule-page">
       <div className="container timeline-container">
         <header className="schedule-header">
-          <div className="schedule-kicker">9월 17일 SCHEDULE</div>
+          <div className="schedule-kicker">BIRTHDAY SCHEDULE</div>
           <div className="schedule-subtitle">동신오빠 생일 축하해</div>
         </header>
 
         <div className="timeline-list">
           {schedule.map((item, index) => (
-            <div className="timeline-item" key={`${item.time}-${index}`}>
-              <div className="timeline-marker-wrap">
-                <span className="timeline-marker" />
-                <span className="timeline-line" />
-              </div>
+            <React.Fragment key={`${item.time}-${index}`}>
+              {(index === 0 || schedule[index - 1].date !== item.date) && (
+                <div className="timeline-date-heading">{item.date}</div>
+              )}
+              <div className="timeline-item">
+                <div className="timeline-marker-wrap">
+                  <span className="timeline-marker" />
+                  <span className="timeline-line" />
+                </div>
 
-              <div className="timeline-card">
-                <div className="timeline-time">{item.time}</div>
-                <div className="timeline-content">
-                  <div className="timeline-title">{item.title}</div>
-                  <div className="timeline-subtitle">
-                    {item.event ? (ladderDone ? `${fixedPrize} 🛍️` : '') : item.subtitle}
+                <div className="timeline-card">
+                  <div className="timeline-time">{item.time}</div>
+                  <div className="timeline-content">
+                    <div className="timeline-title">{item.title}</div>
+                    <div className="timeline-subtitle">{item.subtitle}</div>
+                    {item.completed && <div className="timeline-completed">✅ 선택 완료</div>}
                   </div>
-
-                  {item.event && (
-                    !ladderDone ? (
-                      <button type="button" className="timeline-btn" onClick={openLadderModal}>
-                        {item.button}
-                      </button>
-                    ) : (
-                      <button type="button" className="timeline-btn completed" disabled>✅ 선택 완료</button>
-                    )
-                  )}
                 </div>
               </div>
-            </div>
+            </React.Fragment>
           ))}
         </div>
 
