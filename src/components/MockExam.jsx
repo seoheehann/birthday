@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { getDailyMockExam } from '../data/mockExamData'
 import { saveMockExamAnswer } from '../utils/cloudSync'
 
@@ -18,6 +18,8 @@ export function readMockExamAnswers() {
 }
 
 export default function MockExam({ points, onRewardPoints, onBack }) {
+  const submittingRef = useRef(false)
+  const [submitting, setSubmitting] = useState(false)
   const [answer, setAnswer] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [message, setMessage] = useState('')
@@ -33,7 +35,10 @@ export default function MockExam({ points, onRewardPoints, onBack }) {
 
   async function submitAnswer() {
     const trimmedAnswer = answer.trim()
-    if (!trimmedAnswer || submitted) return
+    if (!trimmedAnswer || submitted || submittingRef.current) return
+    submittingRef.current = true
+    setSubmitting(true)
+    setMessage('서버에 저장 중이에요…')
 
     const nextAnswer = {
       dateKey,
@@ -55,8 +60,12 @@ export default function MockExam({ points, onRewardPoints, onBack }) {
         localStorage.setItem(ANSWERS_STORAGE_KEY, JSON.stringify(nextAnswers))
       } catch (error) {}
     } catch (error) {
-      setMessage('저장에 실패했어요. 잠시 후 다시 시도해주세요.')
+      console.error('Supabase answer submission failed', error)
+      setMessage(`서버에 저장하지 못했어요. ${error.message || '네트워크 연결을 확인하고 다시 시도해주세요.'}`)
       return
+    } finally {
+      submittingRef.current = false
+      setSubmitting(false)
     }
 
     onRewardPoints(100)
@@ -82,12 +91,12 @@ export default function MockExam({ points, onRewardPoints, onBack }) {
         value={answer}
         onChange={event => { setAnswer(event.target.value); setMessage('') }}
         placeholder="오늘의 답변을 입력해주세요."
-        disabled={submitted}
+        disabled={submitted || submitting}
         aria-label="오늘의 모의고사 답변"
       />
 
-      <button type="button" className="mock-exam-submit" onClick={submitAnswer} disabled={submitted || !answer.trim()}>
-        {submitted ? '✅ 답변 작성 완료' : '답변 작성 완료 (+100 PT)'}
+      <button type="button" className="mock-exam-submit" onClick={submitAnswer} disabled={submitted || submitting || !answer.trim()}>
+        {submitting ? '서버에 저장 중…' : submitted ? '✅ 답변 작성 완료' : '답변 작성 완료 (+100 PT)'}
       </button>
       {message && <div className="mock-exam-message" role="status">{message}</div>}
       {submitted && !message && <div className="mock-exam-completed">오늘 답변은 이미 제출되었어요. 현재 보유 포인트 {points} PT</div>}

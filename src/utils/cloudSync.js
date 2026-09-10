@@ -25,15 +25,37 @@ function readLegacyAnswers() {
   return readJson('dongshinMockExamAnswers', [])
 }
 
+let authenticationPromise
+
 async function ensureAnonymousUser() {
-  if (!supabase) return null
+  if (!supabase) throw new Error('서버 연결 설정이 누락되었어요. 사이트 관리자에게 문의해주세요.')
+  if (!authenticationPromise) {
+    authenticationPromise = (async () => {
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
+      if (sessionError) throw sessionError
+      if (sessionData.session?.user) return sessionData.session.user
+      const { data, error } = await supabase.auth.signInAnonymously()
+      if (error) throw error
+      if (!data.user) throw new Error('사용자 인증에 실패했어요.')
+      return data.user
+    })().finally(() => { authenticationPromise = null })
+  }
+  return authenticationPromise
+}
 
-  const { data: sessionData } = await supabase.auth.getSession()
-  if (sessionData.session?.user) return sessionData.session.user
-
-  const { data, error } = await supabase.auth.signInAnonymously()
-  if (error) throw error
-  return data.user
+async function syncLegacyAnswers(userId) {
+  const answers = readLegacyAnswers()
+  if (!Array.isArray(answers)) return
+  for (const answer of answers) {
+    const { error } = await supabase.from('mock_exam_answers').upsert({
+      user_id: userId,
+      answer_date: answer.dateKey,
+      question: answer.question,
+      answer: answer.answer,
+      answered_at: answer.answeredAt || new Date().toISOString(),
+    }, { onConflict: 'user_id,answer_date', ignoreDuplicates: true })
+    if (error) throw error
+  }
 }
 
 function cachePlayerState(userId, state) {
@@ -55,15 +77,7 @@ export async function migrateLegacyState() {
   if (readError) throw readError
 
   if (existingState) {
-    for (const answer of readLegacyAnswers()) {
-      await supabase.from('mock_exam_answers').insert({
-        user_id: user.id,
-        answer_date: answer.dateKey,
-        question: answer.question,
-        answer: answer.answer,
-        answered_at: answer.answeredAt || new Date().toISOString(),
-      }, { onConflict: 'user_id,answer_date', ignoreDuplicates: true })
-    }
+    await syncLegacyAnswers(user.id)
     cachePlayerState(user.id, existingState)
     return { status: 'already-migrated', userId: user.id, state: existingState }
   }
@@ -73,22 +87,17 @@ export async function migrateLegacyState() {
     .from('player_state')
     .insert({
       user_id: user.id,
-      ...legacyState,
+      points: legacyState.points,
+      purchased_coupons: legacyState.purchasedCoupons,
+      used_coupon_ids: legacyState.usedCouponIds,
+      roulette_state: legacyState.rouletteState,
       migrated_at: new Date().toISOString(),
     })
     .select()
     .single()
 
   if (insertError) throw insertError
-  for (const answer of readLegacyAnswers()) {
-    await supabase.from('mock_exam_answers').insert({
-      user_id: user.id,
-      answer_date: answer.dateKey,
-      question: answer.question,
-      answer: answer.answer,
-      answered_at: answer.answeredAt || new Date().toISOString(),
-    }, { onConflict: 'user_id,answer_date', ignoreDuplicates: true })
-  }
+  await syncLegacyAnswers(user.id)
   cachePlayerState(user.id, insertedState)
   return { status: 'migrated', userId: user.id, state: insertedState }
 }
@@ -115,7 +124,6 @@ export async function savePlayerState(state) {
 }
 
 export async function saveMockExamAnswer({ dateKey, question, answer }) {
-  if (!supabase) return { status: 'not-configured' }
   const user = await ensureAnonymousUser()
   const { data: existingAnswer, error: readError } = await supabase
     .from('mock_exam_answers')
@@ -131,6 +139,7 @@ export async function saveMockExamAnswer({ dateKey, question, answer }) {
     .from('mock_exam_answers')
     .insert({ user_id: user.id, answer_date: dateKey, question, answer })
 
+  if (insertError?.code === '23505') return { status: 'already-submitted' }
   if (insertError) throw insertError
   return { status: 'submitted' }
 }
