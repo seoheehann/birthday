@@ -3,6 +3,7 @@ import RouletteGame from './RouletteGame'
 import CouponPocketModal from './CouponPocketModal'
 import MockExam from './MockExam'
 import { savePlayerState } from '../utils/cloudSync'
+import { readRouletteState } from '../utils/rouletteStorage'
 
 const missions = [
   '서희가 입을 옷 골라주기',
@@ -187,7 +188,8 @@ export default function MiniGameZone({ rouletteState, updateRouletteState, cloud
     syncCloudState(points, purchasedItems, nextUsedCouponIds, nextRouletteState)
   }
 
-  function syncCloudState(nextPoints, nextItems, nextUsedCouponIds, nextRouletteState = rouletteState) {
+  // Delayed roulette rewards must save the balance after the ticket was spent.
+  function syncCloudState(nextPoints, nextItems, nextUsedCouponIds, nextRouletteState = readRouletteState()) {
     if (!cloudSyncReady) return
     savePlayerState({
       points: nextPoints,
