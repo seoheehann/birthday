@@ -19,10 +19,10 @@ export default function App() {
 
   const goTo = (n) => setStep(n)
 
-  function updateRouletteState(updater) {
+  function updateRouletteState(updater, { sync = true } = {}) {
     const nextState = updateStoredRouletteState(updater)
     setRouletteState(nextState)
-    if (cloudSyncReady) {
+    if (cloudSyncReady && sync) {
       let points = 0
       let purchasedCoupons = []
       let usedCouponIds = []

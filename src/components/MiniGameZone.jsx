@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import RouletteGame from './RouletteGame'
 import CouponPocketModal from './CouponPocketModal'
 import MockExam from './MockExam'
@@ -28,6 +28,7 @@ const games = [
 ]
 
 const shopItems = [
+  { id: 'roulette-ticket', icon: '🎟️', name: '룰렛 티켓 1장', description: '내 쿠폰함에서 사용하면 룰렛 티켓 1장이 충전돼요', price: 200 },
   { id: 'coffee', icon: '🔞', name: '19금 절대 권력권', description: '원하는 때, 원하는 곳에서 하고 싶은 대로 다 해드리는 19금 절대 권력', price: 1000 },
   { id: 'dessert', icon: '👩‍🍳', name: '무엇이든 요리해 드립니다! 서희표 1:1 수제 요리권', description: '원하는 메뉴를 서희가 직접 만들어주는 특별 요리권', price: 400 },
   { id: 'wish', icon: '🪄', name: '소원 이용권', description: '귀여운 소원 하나 들어주기', price: 800, forSale: false },
@@ -75,6 +76,8 @@ export default function MiniGameZone({ rouletteState, updateRouletteState, cloud
   const [shopMessage, setShopMessage] = useState('')
   const [usedCouponIds, setUsedCouponIds] = useState([])
   const [couponPocketOpen, setCouponPocketOpen] = useState(false)
+
+  const redeemedCouponIds = useRef(new Set())
 
   const todayKey = getTodayKey()
   const missionText = getMissionForToday(new Date())
@@ -172,20 +175,25 @@ export default function MiniGameZone({ rouletteState, updateRouletteState, cloud
   }
 
   function handleUseCoupon(couponId) {
-    if (!purchasedCoupons.some(coupon => coupon.instanceId === couponId) || usedCouponIds.includes(couponId)) return
+    const coupon = purchasedCoupons.find(item => item.instanceId === couponId)
+    if (!coupon || usedCouponIds.includes(couponId) || redeemedCouponIds.current.has(couponId)) return
+    redeemedCouponIds.current.add(couponId)
     const nextUsedCouponIds = [...usedCouponIds, couponId]
     setUsedCouponIds(nextUsedCouponIds)
     try { localStorage.setItem('miniShopUsedCoupons', JSON.stringify(nextUsedCouponIds)) } catch (e) {}
-    syncCloudState(points, purchasedItems, nextUsedCouponIds)
+    const nextRouletteState = coupon.id === 'roulette-ticket'
+      ? updateRouletteState(current => ({ ...current, ticketCount: current.ticketCount + 1 }), { sync: false })
+      : rouletteState
+    syncCloudState(points, purchasedItems, nextUsedCouponIds, nextRouletteState)
   }
 
-  function syncCloudState(nextPoints, nextItems, nextUsedCouponIds) {
+  function syncCloudState(nextPoints, nextItems, nextUsedCouponIds, nextRouletteState = rouletteState) {
     if (!cloudSyncReady) return
     savePlayerState({
       points: nextPoints,
       purchasedCoupons: nextItems,
       usedCouponIds: nextUsedCouponIds,
-      rouletteState,
+      rouletteState: nextRouletteState,
     }).catch(error => console.error('Supabase state sync failed. Local storage remains active.', error))
   }
 
