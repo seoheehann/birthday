@@ -1235,3 +1235,51 @@ body{
 .coupon-confirm-actions button{ min-height:42px; border:1px solid rgba(243,231,200,0.15); border-radius:999px; color:rgba(243,231,200,0.65); background:rgba(255,255,255,0.035); font-size:0.72rem; font-weight:800; cursor:pointer; }
 .coupon-confirm-actions button.confirm{ border-color:rgba(212,175,55,0.65); color:#191308; background:linear-gradient(135deg, #e2c368, #b38427); }
 @media (max-width:390px){ .mini-header{ align-items:flex-start; }.mini-title{ font-size:1.18rem; }.mini-sub{ max-width:190px; }.coupon-ticket{ grid-template-columns:36px 1fr auto; }.coupon-ticket-icon{ width:36px; height:36px; } }
+
+.birthday-letter {
+  width: min(540px, calc(100vw - 32px));
+  max-height: 85vh;
+  max-height: 85dvh;
+  margin: auto;
+  padding: 0;
+  border: 1px solid #e6cfb4;
+  border-radius: 12px;
+  background: #fff9ee;
+  color: #543d36;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, .4);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.birthday-letter::backdrop { background: rgba(15, 10, 12, .7); }
+.birthday-letter[open] { animation: birthdayLetterOpen .45s ease-out; }
+.birthday-letter-paper {
+  position: relative;
+  padding: 48px clamp(24px, 6vw, 44px) 36px;
+  background: repeating-linear-gradient(transparent 0 31px, rgba(193, 157, 124, .12) 31px 32px);
+  text-align: left;
+}
+.birthday-letter-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: #f3e5d7;
+  color: #543d36;
+  font-size: 28px;
+  cursor: pointer;
+}
+.birthday-letter-close:focus-visible { outline: 2px solid #a44b5b; outline-offset: 2px; }
+.birthday-letter-heart { display: block; color: #bc5868; font-size: 28px; margin-bottom: 12px; }
+.birthday-letter h2 { margin: 0 0 24px; font-size: 22px; line-height: 1.5; color: #943f51; }
+.birthday-letter p { margin: 0 0 22px; font-size: 17px; line-height: 1.9; word-break: keep-all; overflow-wrap: anywhere; }
+.birthday-letter p:last-child { margin-bottom: 0; }
+@keyframes birthdayLetterOpen {
+  from { opacity: 0; transform: translateY(24px) scale(.94); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .birthday-letter[open] { animation: none; }
+}

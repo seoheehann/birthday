@@ -1,21 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
+import { BIRTHDAY_START, isBirthdayCelebrationActive } from '../utils/birthdayCelebration'
+import BirthdayLetter from './BirthdayLetter'
 
-export default function Welcome({ onStart }){
-  const TEST_MODE = false
-
+export default function Welcome({ onStart, previewBirthday = false }){
   const [timeLeft, setTimeLeft] = useState({days: 0, totalHours: '00', mm: '00', ss: '00'})
   const [pin, setPin] = useState('')
   const [anim, setAnim] = useState('idle') // 'idle' | 'shake' | 'unlock'
-  const [fireworks, setFireworks] = useState(TEST_MODE)
+  const [fireworks, setFireworks] = useState(false)
   const [letterOpened, setLetterOpened] = useState(false)
-  const fireworksStartRef = useRef(null)
 
   const CORRECT_PIN = '0415'
-  const target = TEST_MODE ? new Date(Date.now() + 2000) : new Date(2026, 8, 17, 0, 0, 0) // TEST: after 2s
-  const dayEnd = TEST_MODE ? new Date(Date.now() + 60000) : new Date(2026, 8, 18, 0, 0, 0) // TEST: 1 min window
-  const messageHideAt = TEST_MODE ? new Date(Date.now() + 15000) : new Date(2026, 8, 17, 1, 0, 0)
+  const target = BIRTHDAY_START
 
   useEffect(() => {
+    const previewStartedAt = Date.now()
     function setTimeLeftFromDiff(diff){
       const days = Math.floor(diff / (1000*60*60*24))
       const totalHours = String(Math.floor(diff / (1000*60*60))).padStart(2,'0')
@@ -26,34 +24,23 @@ export default function Welcome({ onStart }){
 
     function update(){
       const now = new Date()
-      const diff = Math.max(target - now, 0)
+      const diff = previewBirthday ? 0 : Math.max(target - now, 0)
 
-      if (diff <= 0) {
-        setTimeLeft({ days: 0, totalHours: '00', mm: '00', ss: '00' })
-        if (!fireworksStartRef.current) {
-          fireworksStartRef.current = now
-          setFireworks(true)
-        }
-      } else {
-        setTimeLeftFromDiff(diff)
-        // ensure fireworks not active before target
-        if (!fireworksStartRef.current) setFireworks(false)
-      }
-
-      // stop fireworks after 60 seconds from start
-      if (fireworksStartRef.current) {
-        const elapsed = now - fireworksStartRef.current
-        if (elapsed >= 60_000) {
-          fireworksStartRef.current = null
-          setFireworks(false)
-        }
-      }
+      setTimeLeftFromDiff(diff)
+      setFireworks(previewBirthday
+        ? now.getTime() - previewStartedAt < 30_000
+        : isBirthdayCelebrationActive(now))
     }
 
     update()
     const id = setInterval(update, 1000)
-    return () => clearInterval(id)
-  }, [])
+    const onVisible = () => { if (!document.hidden) update() }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      clearInterval(id)
+      document.removeEventListener('visibilitychange', onVisible)
+    }
+  }, [previewBirthday])
 
   useEffect(() => {
     if(pin.length === 4){
@@ -77,10 +64,9 @@ export default function Welcome({ onStart }){
     if(el) el.focus()
   }
 
-  const now = new Date()
-  const fireworksActive = fireworks && now < dayEnd
-  const shouldShowLetterMessage = fireworksActive && now < messageHideAt
-  const letterMessage = letterOpened ? '비밀번호를 입력해주세요!' : '편지가 도착했어요!'
+  const fireworksActive = fireworks
+  const shouldShowLetterMessage = fireworksActive
+  const letterMessage = '편지가 도착했어요!'
 
   return (
     <div className={`screen welcome-screen ${anim === 'shake' ? 'shake' : ''}`}>
@@ -130,7 +116,7 @@ export default function Welcome({ onStart }){
             <button
               type="button"
               className={`letter-envelope ${letterOpened ? 'opened' : ''}`}
-              aria-label="Letter envelope"
+              aria-label="생일 편지 열기"
               onClick={() => setLetterOpened(true)}
             >
               <span className="letter-flap" />
@@ -139,6 +125,8 @@ export default function Welcome({ onStart }){
             </button>
           </div>
         )}
+
+        {letterOpened && <BirthdayLetter onClose={() => setLetterOpened(false)} />}
 
         {fireworksActive && (
           <div className="fireworks" aria-hidden="true">
