@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { BIRTHDAY_START, isBirthdayCelebrationActive } from '../utils/birthdayCelebration'
 import BirthdayLetter from './BirthdayLetter'
 
-export default function Welcome({ onStart, previewBirthday = false }){
+export default function Welcome({ onStart }){
   const [timeLeft, setTimeLeft] = useState({days: 0, totalHours: '00', mm: '00', ss: '00'})
   const [pin, setPin] = useState('')
   const [anim, setAnim] = useState('idle') // 'idle' | 'shake' | 'unlock'
@@ -13,7 +13,6 @@ export default function Welcome({ onStart, previewBirthday = false }){
   const target = BIRTHDAY_START
 
   useEffect(() => {
-    const previewStartedAt = Date.now()
     function setTimeLeftFromDiff(diff){
       const days = Math.floor(diff / (1000*60*60*24))
       const totalHours = String(Math.floor(diff / (1000*60*60))).padStart(2,'0')
@@ -24,12 +23,10 @@ export default function Welcome({ onStart, previewBirthday = false }){
 
     function update(){
       const now = new Date()
-      const diff = previewBirthday ? 0 : Math.max(target - now, 0)
+      const diff = Math.max(target - now, 0)
 
       setTimeLeftFromDiff(diff)
-      setFireworks(previewBirthday
-        ? now.getTime() - previewStartedAt < 30_000
-        : isBirthdayCelebrationActive(now))
+      setFireworks(isBirthdayCelebrationActive(now))
     }
 
     update()
@@ -40,7 +37,7 @@ export default function Welcome({ onStart, previewBirthday = false }){
       clearInterval(id)
       document.removeEventListener('visibilitychange', onVisible)
     }
-  }, [previewBirthday])
+  }, [])
 
   useEffect(() => {
     if(pin.length === 4){

@@ -8,10 +8,6 @@ import { getLocalDateKey, grantDailyFreeTicket, updateStoredRouletteState, write
 import { migrateLegacyState, savePlayerState } from './utils/cloudSync'
 
 export default function App() {
-  if (import.meta.env.DEV && new URLSearchParams(window.location.search).get('preview') === 'birthday') {
-    return <div className="app-shell"><div className="mobile-frame"><Welcome previewBirthday /></div></div>
-  }
-
   if (new URLSearchParams(window.location.search).get('admin') === '1') {
     return <MockExamAdmin />
   }
