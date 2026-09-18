@@ -62,8 +62,6 @@ export default function Welcome({ onStart }){
   }
 
   const fireworksActive = fireworks
-  const shouldShowLetterMessage = fireworksActive
-  const letterMessage = '편지가 도착했어요!'
 
   return (
     <div className={`screen welcome-screen ${anim === 'shake' ? 'shake' : ''}`}>
@@ -105,23 +103,19 @@ export default function Welcome({ onStart }){
             setPin(v)
           }}
         />
-        {fireworksActive && (
-          <div className="letter-wrapper">
-            {shouldShowLetterMessage && (
-              <div className="letter-message">{letterMessage}</div>
-            )}
-            <button
-              type="button"
-              className={`letter-envelope ${letterOpened ? 'opened' : ''}`}
-              aria-label="생일 편지 열기"
-              onClick={() => setLetterOpened(true)}
-            >
-              <span className="letter-flap" />
-              <span className="letter-body" />
-              <span className="letter-seal" aria-hidden="true" />
-            </button>
-          </div>
-        )}
+        <div className="letter-wrapper">
+          <div className="letter-message">편지가 도착했어요!</div>
+          <button
+            type="button"
+            className={`letter-envelope ${letterOpened ? 'opened' : ''}`}
+            aria-label="생일 편지 열기"
+            onClick={() => setLetterOpened(true)}
+          >
+            <span className="letter-flap" />
+            <span className="letter-body" />
+            <span className="letter-seal" aria-hidden="true" />
+          </button>
+        </div>
 
         {letterOpened && <BirthdayLetter onClose={() => setLetterOpened(false)} />}
 
