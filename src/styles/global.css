@@ -999,6 +999,31 @@ body{
 .card-title{ font-weight:800; color:var(--gold-2); font-size:0.98rem }
 .card-sub{ color:rgba(243,231,200,0.68); font-size:0.8rem }
 
+.mini-card.mini-card-closed {
+  filter: grayscale(1);
+  background: #242424;
+  border-color: #454545;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+.mini-card-closed .card-icon { opacity: .45; }
+.mini-card-closed .card-title { color: #aaa; }
+.mini-card-closed .card-sub { color: #999; }
+.event-closed-badge {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 5px 10px;
+  border: 1px solid #666;
+  border-radius: 20px;
+  color: #eee;
+  background: #383838;
+  font-size: .75rem;
+  font-weight: 700;
+}
+.shop-item-closed { filter: grayscale(1); opacity: .65; }
+.coupon-use-btn:disabled { filter: grayscale(1); opacity: .65; cursor: not-allowed; }
+
 .shop-entry{
   grid-column:1 / -1; display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:14px;
   width:100%; margin-top:8px; padding:17px 18px; overflow:hidden; position:relative;

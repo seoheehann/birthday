@@ -6,6 +6,7 @@ import DailyTicketPopup from './components/DailyTicketPopup'
 import MockExamAdmin from './components/MockExamAdmin'
 import { getLocalDateKey, grantDailyFreeTicket, updateStoredRouletteState, writeRouletteState } from './utils/rouletteStorage'
 import { migrateLegacyState, savePlayerState } from './utils/cloudSync'
+import { ROULETTE_EVENT_OPEN } from './data/eventAvailability'
 
 export default function App() {
   if (new URLSearchParams(window.location.search).get('admin') === '1') {
@@ -62,7 +63,7 @@ export default function App() {
   }, [])
 
   const todayKey = getLocalDateKey()
-  const showTicketPopup = step === 2
+  const showTicketPopup = ROULETTE_EVENT_OPEN && step === 2
     && rouletteState.lastFreeTicketDate === todayKey
     && rouletteState.popupDismissedDate !== todayKey
 

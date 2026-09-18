@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { ALLOW_QUIZ_RETRY, getDailyQuiz, rouletteItems } from '../data/rouletteData'
 import { getLocalDateKey } from '../utils/rouletteStorage'
+import { ROULETTE_EVENT_OPEN } from '../data/eventAvailability'
 
 function pickWeightedItem() {
   const total = rouletteItems.reduce((sum, item) => sum + item.weight, 0)
@@ -57,7 +58,7 @@ export default function RouletteGame({ rouletteState, updateRouletteState, onRew
   }, [todayKey])
 
   function spinRoulette() {
-    if (spinLockRef.current || spinning) return
+    if (!ROULETTE_EVENT_OPEN || spinLockRef.current || spinning) return
     if (rouletteState.ticketCount <= 0) {
       setRouletteMessage('룰렛 티켓이 없어요 😢 아래 BONUS CHANCE에 도전해보세요!')
       return
@@ -88,7 +89,7 @@ export default function RouletteGame({ rouletteState, updateRouletteState, onRew
   }
 
   function submitQuiz() {
-    if (quizLockRef.current || quizCompleted || selectedAnswer === null || quizInfo.status !== 'active') return
+    if (!ROULETTE_EVENT_OPEN || quizLockRef.current || quizCompleted || selectedAnswer === null || quizInfo.status !== 'active') return
     if (quizInfo.quiz.type === 'manual') {
       setManualConfirmOpen(true)
       return
@@ -112,6 +113,7 @@ export default function RouletteGame({ rouletteState, updateRouletteState, onRew
   }
 
   function completeDailyQuiz() {
+    if (!ROULETTE_EVENT_OPEN) return
     const latest = updateRouletteState(current => {
       if (current.quizCompletedDate === todayKey) return current
       return { ...current, ticketCount: current.ticketCount + 1, quizCompletedDate: todayKey }
@@ -122,7 +124,7 @@ export default function RouletteGame({ rouletteState, updateRouletteState, onRew
   }
 
   function judgeManualQuiz(correct) {
-    if (quizLockRef.current || quizCompleted) return
+    if (!ROULETTE_EVENT_OPEN || quizLockRef.current || quizCompleted) return
     quizLockRef.current = true
     setManualConfirmOpen(false)
     if (correct) completeDailyQuiz()

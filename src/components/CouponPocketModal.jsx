@@ -8,7 +8,7 @@ export default function CouponPocketModal({ coupons, usedCouponIds, onUseCoupon,
   const visibleCoupons = activeTab === 'available' ? availableCoupons : usedCoupons
 
   function confirmUse() {
-    if (!confirmCoupon) return
+    if (!confirmCoupon || confirmCoupon.unavailable) return
     onUseCoupon(confirmCoupon.instanceId)
     setConfirmCoupon(null)
     setActiveTab('used')
@@ -36,7 +36,7 @@ export default function CouponPocketModal({ coupons, usedCouponIds, onUseCoupon,
               <article className={'coupon-ticket' + (used ? ' used' : '')} key={coupon.instanceId}>
                 <div className="coupon-ticket-icon" aria-hidden="true">{coupon.icon}</div>
                 <div className="coupon-ticket-copy"><h4>{coupon.name}</h4><p>{coupon.description}</p><small>NO. {coupon.instanceId.toUpperCase()}</small></div>
-                {!used && <button type="button" className="coupon-use-btn" onClick={() => setConfirmCoupon(coupon)}>사용하기</button>}
+                {!used && <button type="button" className="coupon-use-btn" disabled={coupon.unavailable} onClick={() => setConfirmCoupon(coupon)}>{coupon.unavailable ? '이벤트 종료' : '사용하기'}</button>}
                 {used && <div className="coupon-used-stamp"><strong>USED</strong><span>사용완료</span></div>}
               </article>
             )

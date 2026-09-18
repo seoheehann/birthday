@@ -1,3 +1,5 @@
+import { ROULETTE_EVENT_OPEN } from '../data/eventAvailability'
+
 export const ROULETTE_STORAGE_KEY = 'rouletteState'
 
 export function getLocalDateKey(date = new Date()) {
@@ -38,6 +40,7 @@ export function updateStoredRouletteState(updater) {
 }
 
 export function grantDailyFreeTicket(date = new Date()) {
+  if (!ROULETTE_EVENT_OPEN) return readRouletteState()
   const todayKey = getLocalDateKey(date)
   return updateStoredRouletteState(current => {
     if (current.lastFreeTicketDate === todayKey) return current

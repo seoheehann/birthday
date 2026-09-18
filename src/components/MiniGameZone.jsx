@@ -4,6 +4,7 @@ import CouponPocketModal from './CouponPocketModal'
 import MockExam from './MockExam'
 import { savePlayerState } from '../utils/cloudSync'
 import { readRouletteState } from '../utils/rouletteStorage'
+import { DAILY_MISSION_OPEN, ROULETTE_EVENT_OPEN } from '../data/eventAvailability'
 
 const missions = [
   '서희가 입을 옷 골라주기',
@@ -23,13 +24,13 @@ const missions = [
 const MISSION_START_DATE = new Date(2026, 8, 6)
 
 const games = [
-  { id: 'daily', icon: '📅', title: '매일 미션 수행하기', sub: '하루에 하나씩!' },
-  { id: 'roulette', icon: '🎰', title: '행운의 룰렛', sub: '오늘의 운세 & 럭키 보상' },
+  { id: 'daily', icon: '📅', title: '매일 미션 수행하기', sub: '하루에 하나씩!', closed: !DAILY_MISSION_OPEN },
+  { id: 'roulette', icon: '🎰', title: '행운의 룰렛', sub: '오늘의 운세 & 럭키 보상', closed: !ROULETTE_EVENT_OPEN },
   { id: 'mock-exam', icon: '📝', title: '동신 모의고사', sub: '오늘의 질문에 답하기' },
 ]
 
 const shopItems = [
-  { id: 'roulette-ticket', icon: '🎟️', name: '룰렛 티켓 1장', description: '내 쿠폰함에서 사용하면 룰렛 티켓 1장이 충전돼요', price: 200 },
+  { id: 'roulette-ticket', icon: '🎟️', name: '룰렛 티켓 1장', description: '내 쿠폰함에서 사용하면 룰렛 티켓 1장이 충전돼요', price: 200, unavailable: !ROULETTE_EVENT_OPEN },
   { id: 'coffee', icon: '🔞', name: '19금 절대 권력권', description: '원하는 때, 원하는 곳에서 하고 싶은 대로 다 해드리는 19금 절대 권력', price: 1000 },
   { id: 'dessert', icon: '👩‍🍳', name: '무엇이든 요리해 드립니다! 서희표 1:1 수제 요리권', description: '원하는 메뉴를 서희가 직접 만들어주는 특별 요리권', price: 400 },
   { id: 'wish', icon: '🪄', name: '소원 이용권', description: '귀여운 소원 하나 들어주기', price: 800, forSale: false },
@@ -134,6 +135,7 @@ export default function MiniGameZone({ rouletteState, updateRouletteState, cloud
   }, [])
 
   function openGame(id) {
+    if (games.some(game => game.id === id && game.closed)) return
     setView(id)
   }
 
@@ -142,7 +144,7 @@ export default function MiniGameZone({ rouletteState, updateRouletteState, cloud
   }
 
   function handleMissionComplete() {
-    if (missionDone) return
+    if (!DAILY_MISSION_OPEN || missionDone) return
 
     const nextPoints = points + 100
     setPoints(nextPoints)
@@ -159,6 +161,7 @@ export default function MiniGameZone({ rouletteState, updateRouletteState, cloud
   }
 
   function handlePurchase(item) {
+    if (item.unavailable) return
     if (points < item.price) {
       setShopMessage((item.price - points) + ' PT가 더 필요해요!')
       return
@@ -177,7 +180,7 @@ export default function MiniGameZone({ rouletteState, updateRouletteState, cloud
 
   function handleUseCoupon(couponId) {
     const coupon = purchasedCoupons.find(item => item.instanceId === couponId)
-    if (!coupon || usedCouponIds.includes(couponId) || redeemedCouponIds.current.has(couponId)) return
+    if (!coupon || coupon.unavailable || usedCouponIds.includes(couponId) || redeemedCouponIds.current.has(couponId)) return
     redeemedCouponIds.current.add(couponId)
     const nextUsedCouponIds = [...usedCouponIds, couponId]
     setUsedCouponIds(nextUsedCouponIds)
@@ -230,7 +233,7 @@ export default function MiniGameZone({ rouletteState, updateRouletteState, cloud
         <header className="mini-header">
           <div>
             <h2 className="mini-title">MINI-GAME ZONE</h2>
-            <div className="mini-sub">미션을 완수하고 포인트를 획득하세요</div>
+            <div className="mini-sub">동신 모의고사에 답하고 포인트를 획득하세요</div>
           </div>
           <div className="mini-header-actions">
             <div className="mini-points">POINTS: <span className="pts">{points} PT</span> <span className="coin">🪙</span></div>
@@ -241,10 +244,11 @@ export default function MiniGameZone({ rouletteState, updateRouletteState, cloud
         {view === 'list' && (
           <div className="mini-grid" role="list">
             {games.map(g => (
-              <button key={g.id} className="mini-card" onClick={() => openGame(g.id)} role="listitem">
+              <button type="button" key={g.id} className={`mini-card${g.closed ? ' mini-card-closed' : ''}`} onClick={() => openGame(g.id)} disabled={g.closed}>
                 <div className="card-icon">{g.icon}</div>
                 <div className="card-title">{g.title}</div>
-                <div className="card-sub">{g.sub}</div>
+                <div className="card-sub">{g.closed ? '참여해 주셔서 감사합니다' : g.sub}</div>
+                {g.closed && <span className="event-closed-badge">이벤트 종료</span>}
               </button>
             ))}
             <button type='button' className='shop-entry' onClick={() => openGame('shop')}>
@@ -262,7 +266,7 @@ export default function MiniGameZone({ rouletteState, updateRouletteState, cloud
           </div>
         )}
 
-        {view === 'daily' && (
+        {view === 'daily' && DAILY_MISSION_OPEN && (
           <div className="game-screen mission-screen">
             <button className="game-back" onClick={backToList}>⬅️ BACK (목록으로)</button>
             <div className="mission-header-row">
@@ -313,18 +317,18 @@ export default function MiniGameZone({ rouletteState, updateRouletteState, cloud
           <div className='game-screen shop-screen'>
             <button className='game-back' onClick={backToList}>⬅️ BACK (게임 목록으로)</button>
             <div className='shop-header'>
-              <div><div className='shop-eyebrow'>POINT SHOP</div><h3>포인트 상점</h3><p>미션으로 모은 포인트를 특별한 선물로 바꿔보세요.</p></div>
+              <div><div className='shop-eyebrow'>POINT SHOP</div><h3>포인트 상점</h3><p>모은 포인트를 특별한 선물로 바꿔보세요.</p></div>
               <div className='shop-balance'><span>보유 포인트</span><strong>{points} PT</strong></div>
             </div>
             {shopMessage && <div className='shop-message' role='status'>{shopMessage}</div>}
             <div className='shop-grid'>
               {shopItems.filter(item => item.forSale !== false).map(item => {
                 return (
-                  <article className='shop-item' key={item.id}>
+                  <article className={`shop-item${item.unavailable ? ' shop-item-closed' : ''}`} key={item.id}>
                     <div className='shop-item-icon' aria-hidden='true'>{item.icon}</div>
                     <div className='shop-item-info'><h4>{item.name}</h4><p>{item.description}</p></div>
-                    <button type='button' className='shop-buy-btn' onClick={() => handlePurchase(item)} data-affordable={points >= item.price}>
-                      {item.price + ' PT'}
+                    <button type='button' className='shop-buy-btn' onClick={() => handlePurchase(item)} disabled={item.unavailable} data-affordable={points >= item.price}>
+                      {item.unavailable ? '판매 종료' : item.price + ' PT'}
                     </button>
                   </article>
                 )
@@ -333,7 +337,7 @@ export default function MiniGameZone({ rouletteState, updateRouletteState, cloud
           </div>
         )}
 
-        {view === 'roulette' && (
+        {view === 'roulette' && ROULETTE_EVENT_OPEN && (
           <RouletteGame
             rouletteState={rouletteState}
             updateRouletteState={updateRouletteState}
